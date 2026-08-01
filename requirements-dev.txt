@@ -1,0 +1,6 @@
+# Dev/tooling dependencies — not required to run the inspection pipeline
+# itself (see requirements.txt for that). These are only needed to:
+#   - regenerate docs/PROJECT_DOCUMENTATION.docx (python-docx)
+#   - capture GUI screenshots with a headless browser (playwright)
+python-docx>=1.1.0
+playwright>=1.47.0
