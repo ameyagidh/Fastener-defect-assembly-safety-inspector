@@ -1,0 +1,37 @@
+# Environment / secrets
+.env
+*.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+
+# Trained model weights (large binaries — track via release/LFS, not git)
+models/*.pt
+models/*.onnx
+!models/.gitkeep
+# Ultralytics downloads its stock pretrained checkpoint to the cwd on first
+# fallback-mode run (see src/detect.py) — never commit this.
+/yolov8n.pt
+
+# Large raw datasets — keep only small labeled samples in fixtures/
+data/raw/*
+!data/raw/.gitkeep
+data/self_collected/*.jpg
+data/self_collected/*.png
+!data/self_collected/.gitkeep
+!data/self_collected/README.md
+
+# Training run artifacts (ultralytics writes these)
+runs/
+train/runs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

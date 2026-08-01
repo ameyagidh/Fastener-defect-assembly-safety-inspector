@@ -1,0 +1,43 @@
+# Severity and verdict rules for the fastener inspection system.
+#
+# This file is the entire safety-critical decision surface. It is intentionally
+# plain data (no code) so the pass/fail logic is auditable and editable by a
+# domain expert without touching src/verdict.py.
+#
+# How to read this file:
+#   1. `class_severity` maps each possible per-fastener detection class to a
+#      base severity level (none / minor / major / critical).
+#   2. `missing_severity` is the severity assigned when a fastener expected by
+#      the template was not detected at all (see src/match_template.py).
+#   3. `verdict_thresholds` maps the *worst* severity found across all
+#      fasteners in an assembly to the overall verdict.
+
+class_severity:
+  bolt_ok: none
+  bolt_corroded: major        # corrosion compromises fastener strength — not a cosmetic issue
+  bolt_misaligned: major      # cross-threading / improper seating risks failure under load
+  bolt_damaged: critical      # visibly deformed/sheared head or shank
+
+missing_severity: critical    # a fastener that should be present and isn't is always critical
+
+# Any fastener at or above this confidence is trusted at face value; below it,
+# the detection is downgraded to "needs_inspection" rather than asserted.
+min_confidence: 0.5
+
+# Overall verdict is the WORST severity found among all fasteners in the
+# assembly, mapped through this table. Order matters: first match wins,
+# evaluated top to bottom.
+verdict_thresholds:
+  - if_worst_severity: critical
+    verdict: unsafe
+  - if_worst_severity: major
+    verdict: unsafe
+  - if_worst_severity: minor
+    verdict: needs_inspection
+  - if_worst_severity: none
+    verdict: safe
+
+# If any single detection's confidence is below min_confidence, cap the best
+# possible verdict at this value regardless of the severity table above —
+# we never claim "safe" on low-confidence evidence.
+low_confidence_verdict_cap: needs_inspection
